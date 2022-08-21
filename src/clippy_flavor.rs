@@ -1,6 +1,4 @@
-use std::{
-    fmt::{self, Display, Formatter},
-};
+use std::fmt::{self, Display, Formatter};
 
 use clap::ArgEnum;
 

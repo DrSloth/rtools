@@ -36,13 +36,9 @@ const DEVELOPMENT_LINTS: [&str; 21] = [
     "missing_docs",
 ];
 
-const PEDANTIC_LINTS: [&str;1] = [
-    "clippy::todo"
-];
+const PEDANTIC_LINTS: [&str; 1] = ["clippy::todo"];
 
-const DENY_ALWAYS: [&str;1] = [
-    "non_ascii_idents",
-];
+const DENY_ALWAYS: [&str; 1] = ["non_ascii_idents"];
 
 /// Run a standard set of cargo watch commands and use one of multiple standardised clippy commands
 #[derive(Parser, Debug)]
@@ -55,9 +51,9 @@ struct CliArgs {
     /// Wether to only warn for lints
     #[clap(short, long, value_parser, default_value_t = false)]
     warn: bool,
-    
+
     /// Wether to run with release
-    #[clap(short='O', long, value_parser, default_value_t = false)]
+    #[clap(short = 'O', long, value_parser, default_value_t = false)]
     optimize: bool,
 }
 
@@ -67,11 +63,11 @@ fn main() -> io::Result<()> {
     let mut cmd = Command::new("cargo");
     // cmd.args(&["+nightly", "clippy"]);
     cmd.arg("clippy");
-    
+
     if cli_args.optimize {
         cmd.arg("--release");
     }
-    
+
     cmd.arg("--");
 
     let action_flag = if cli_args.warn { "-W" } else { "-D" };
@@ -94,7 +90,7 @@ fn main() -> io::Result<()> {
         action_flag,
         "warnings",
     ]);
-  
+
     for lint in DENY_ALWAYS {
         cmd.args(&["-D", lint]);
     }
