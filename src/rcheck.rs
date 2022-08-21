@@ -48,12 +48,25 @@ const COMMANDS: [(&str, &str); 4] = [
 fn main() -> io::Result<()> {
     let cli_args = CliArgs::parse();
 
+    // let mut cmd = if cli_args.observe {
+    //     observe(cli_args)
+    // } else {
+    //     check(cli_args)
+    // };
+    
+    let run_cmd = build_cmd(&cli_args);
     let mut cmd = if cli_args.observe {
-        observe(cli_args)
+        let mut cmd = Command::new("cargo");
+        cmd.args(&["watch", "--", "bash", "-c", &run_cmd]);
+        cmd
     } else {
-        check(cli_args)
+        let mut cmd = Command::new("bash");
+        cmd.args(&["-c", &run_cmd]);
+        cmd
     };
-
+    
+    println!("cmd: {:?}", cmd);
+    
     cmd.stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
@@ -62,44 +75,14 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn observe(cli_args: CliArgs) -> Command {
-    let mut shell_cmd = Command::new("cargo");
-
-    shell_cmd.arg("watch");
-    for (flag, cmd) in COMMANDS {
-        match cmd {
-            "rclippy" => {
-                let mut rclippy = String::with_capacity(64);
-                fmt_rclippy(&cli_args, &mut rclippy);
-                shell_cmd.args(&[flag, &rclippy]);
-            }
-            "run" => {
-                if cli_args.observe {
-                    shell_cmd.args(&["-x", "run"]);
-                }
-            }
-            cmd => {
-                shell_cmd.args(&[flag, cmd]);
-            }
-        }
-    }
-
-    shell_cmd
-}
-
-fn check(cli_args: CliArgs) -> Command {
-    // TODO change this to directly run the commands without bash
-    let mut shell_cmd = Command::new("bash");
-
-    shell_cmd.arg("-c");
-
+fn build_cmd(cli_args: &CliArgs) -> String {
     let mut run_arg = String::with_capacity(1024);
     run_arg.push_str("echo 'running rcheck'");
     for (flag, cmd) in COMMANDS {
         match cmd {
             "rclippy" => {
                 run_arg.push_str("&&");
-                fmt_rclippy(&cli_args, &mut run_arg);
+                fmt_rclippy(cli_args, &mut run_arg);
             }
             "run" => {
                 if cli_args.run {
@@ -125,12 +108,79 @@ fn check(cli_args: CliArgs) -> Command {
             },
         }
     }
-
-    println!("{}", run_arg);
-    shell_cmd.arg(run_arg);
-
-    shell_cmd
+    
+    run_arg
 }
+
+// fn observe(cli_args: CliArgs) -> Command {
+//     let mut shell_cmd = Command::new("cargo");
+
+//     shell_cmd.arg("watch");
+//     for (flag, cmd) in COMMANDS {
+//         match cmd {
+//             "rclippy" => {
+//                 let mut rclippy = String::with_capacity(64);
+//                 fmt_rclippy(&cli_args, &mut rclippy);
+//                 shell_cmd.args(&[flag, &rclippy]);
+//             }
+//             "run" => {
+//                 if cli_args.run {
+//                     shell_cmd.args(&["-x", "run"]);
+//                 }
+//             }
+//             cmd => {
+//                 shell_cmd.args(&[flag, cmd]);
+//             }
+//         }
+//     }
+
+//     shell_cmd
+// }
+
+// fn check(cli_args: CliArgs) -> Command {
+//     // TODO change this to directly run the commands without bash
+//     let mut shell_cmd = Command::new("bash");
+
+//     shell_cmd.arg("-c");
+
+//     let mut run_arg = String::with_capacity(1024);
+//     run_arg.push_str("echo 'running rcheck'");
+//     for (flag, cmd) in COMMANDS {
+//         match cmd {
+//             "rclippy" => {
+//                 run_arg.push_str("&&");
+//                 fmt_rclippy(&cli_args, &mut run_arg);
+//             }
+//             "run" => {
+//                 if cli_args.run {
+//                     run_arg.push_str("&& cargo run ");
+//                     if cli_args.optimize {
+//                         run_arg.push_str("--release");
+//                     }
+//                 } else {
+//                     continue;
+//                 }
+//             }
+//             s => match flag {
+//                 "-x" => {
+//                     let _ = write!(run_arg, "&& cargo {} ", s);
+//                     if cli_args.optimize {
+//                         run_arg.push_str("--release");
+//                     }
+//                 }
+//                 "-s" => {
+//                     let _ = write!(run_arg, "&& {}", s);
+//                 }
+//                 _ => unreachable!(),
+//             },
+//         }
+//     }
+
+//     println!("{}", run_arg);
+//     shell_cmd.arg(run_arg);
+
+//     shell_cmd
+// }
 
 fn fmt_rclippy(cli_args: &CliArgs, out: &mut String) {
     let _ = write!(
