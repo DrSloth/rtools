@@ -11,7 +11,7 @@ use clap::Parser;
 
 use clippy_flavor::ClippyFlavor;
 
-const DEVELOPMENT_LINTS: [&str; 21] = [
+const DEVELOPMENT_LINTS: [&str; 20] = [
     "clippy::pedantic",
     "clippy::unwrap_used",
     "clippy::expect_used",
@@ -24,7 +24,7 @@ const DEVELOPMENT_LINTS: [&str; 21] = [
     "clippy::string_lit_as_bytes",
     "clippy::string_to_string",
     "clippy::as_underscore",
-    "clippy::assertions_on_result_states",
+    // "clippy::assertions_on_result_states",
     "clippy::clone_on_ref_ptr",
     "clippy::default_union_representation",
     "clippy::rc_buffer",
