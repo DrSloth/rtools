@@ -89,6 +89,8 @@ fn main() -> io::Result<()> {
         "clippy::needless_pass_by_value",
         "-A",
         "clippy::module_name_repetitions",
+        "-A",
+        "clippy::enum_variant_names",
         action_flag,
         "warnings",
     ]);
