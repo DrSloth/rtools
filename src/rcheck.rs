@@ -38,9 +38,10 @@ struct CliArgs {
     optimize: bool,
 }
 
-const COMMANDS: [(&str, &str); 4] = [
+const COMMANDS: [(&str, &str); 5] = [
     ("-x", "check"),
     ("-x", "test"),
+    ("-x", "fmt --check"),
     ("-s", "rclippy"),
     ("-x", "run"),
 ];
@@ -53,7 +54,7 @@ fn main() -> io::Result<()> {
     // } else {
     //     check(cli_args)
     // };
-    
+
     let run_cmd = build_cmd(&cli_args);
     let mut cmd = if cli_args.observe {
         let mut cmd = Command::new("cargo");
@@ -64,9 +65,9 @@ fn main() -> io::Result<()> {
         cmd.args(&["-c", &run_cmd]);
         cmd
     };
-    
+
     println!("cmd: {:?}", cmd);
-    
+
     cmd.stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
@@ -108,7 +109,7 @@ fn build_cmd(cli_args: &CliArgs) -> String {
             },
         }
     }
-    
+
     run_arg
 }
 

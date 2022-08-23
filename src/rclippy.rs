@@ -11,7 +11,7 @@ use clap::Parser;
 
 use clippy_flavor::ClippyFlavor;
 
-const DEVELOPMENT_LINTS: [&str; 20] = [
+const DEVELOPMENT_LINTS: [&str; 19] = [
     "clippy::pedantic",
     "clippy::unwrap_used",
     "clippy::expect_used",
@@ -23,7 +23,7 @@ const DEVELOPMENT_LINTS: [&str; 20] = [
     "clippy::string_add_assign",
     "clippy::string_lit_as_bytes",
     "clippy::string_to_string",
-    "clippy::as_underscore",
+    // "clippy::as_underscore",
     // "clippy::assertions_on_result_states",
     "clippy::clone_on_ref_ptr",
     "clippy::default_union_representation",
@@ -87,6 +87,8 @@ fn main() -> io::Result<()> {
         "clippy::must_use_candidate",
         "-A",
         "clippy::needless_pass_by_value",
+        "-A",
+        "clippy::module_name_repetitions",
         action_flag,
         "warnings",
     ]);
