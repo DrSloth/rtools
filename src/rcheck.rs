@@ -68,12 +68,17 @@ fn main() -> io::Result<()> {
 
     println!("cmd: {:?}", cmd);
 
-    cmd.stdin(Stdio::inherit())
+    let output = cmd
+        .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .output()?;
 
-    Ok(())
+    if let Some(i) = output.status.code() {
+        std::process::exit(i);
+    } else {
+        Ok(())
+    }
 }
 
 fn build_cmd(cli_args: &CliArgs) -> String {
@@ -97,13 +102,17 @@ fn build_cmd(cli_args: &CliArgs) -> String {
             }
             s => match flag {
                 "-x" => {
-                    let _ = write!(run_arg, "&& cargo {} ", s);
+                    // let _ = write!(run_arg, "&& cargo {} ", s);
+                    run_arg.push_str("&& cargo ");
+                    run_arg.push_str(s);
                     if cli_args.optimize {
                         run_arg.push_str("--release");
                     }
                 }
                 "-s" => {
-                    let _ = write!(run_arg, "&& {}", s);
+                    // write!(run_arg, "&& {}", s).unwrap_or_else(|_| panic);
+                    run_arg.push_str("&& ");
+                    run_arg.push_str(s);
                 }
                 _ => unreachable!(),
             },
