@@ -99,10 +99,15 @@ fn main() -> io::Result<()> {
         cmd.args(&["-D", lint]);
     }
 
-    cmd.stdin(Stdio::inherit())
+    let output = cmd
+        .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .output()?;
 
-    Ok(())
+    if let Some(code) = output.status.code() {
+        std::process::exit(code);
+    } else {
+        Ok(())
+    }
 }
