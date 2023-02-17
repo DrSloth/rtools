@@ -11,7 +11,7 @@ use clap::Parser;
 
 use clippy_flavor::ClippyFlavor;
 
-const DEVELOPMENT_LINTS: [&str; 19] = [
+const DEVELOPMENT_LINTS: [&str; 20] = [
     "clippy::pedantic",
     "clippy::unwrap_used",
     "clippy::expect_used",
@@ -33,6 +33,7 @@ const DEVELOPMENT_LINTS: [&str; 19] = [
     "clippy::undocumented_unsafe_blocks",
     "clippy::default_numeric_fallback",
     "clippy::separated_literal_suffix",
+    "clippy::as_conversions",
     "missing_docs",
 ];
 

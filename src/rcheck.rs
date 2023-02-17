@@ -49,12 +49,6 @@ const COMMANDS: [(&str, &str); 5] = [
 fn main() -> io::Result<()> {
     let cli_args = CliArgs::parse();
 
-    // let mut cmd = if cli_args.observe {
-    //     observe(cli_args)
-    // } else {
-    //     check(cli_args)
-    // };
-
     let run_cmd = build_cmd(&cli_args);
     let mut cmd = if cli_args.observe {
         let mut cmd = Command::new("cargo");
