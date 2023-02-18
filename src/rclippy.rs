@@ -144,7 +144,7 @@ const DEVELOPMENT_LINTS: &[&str] = &[
     "clippy::use_self",
     "clippy::useless_let_if_seq",
     // Restriction lints
-    "clippy::allow_attributes_without_reason",
+    // "clippy::allow_attributes_without_reason", activated as soon as lint_reasons are stable
     "clippy::arithmetic_side_effects",
     "clippy::as_conversions",
     "clippy::as_underscore",
@@ -266,3 +266,4 @@ fn main() -> io::Result<()> {
         Ok(())
     }
 }
+
