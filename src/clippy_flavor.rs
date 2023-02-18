@@ -2,6 +2,7 @@ use std::fmt::{self, Display, Formatter};
 
 use clap::ArgEnum;
 
+/// Enumeration describing how harsh clippy should be
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Default, ArgEnum)]
 pub enum ClippyFlavor {
     /// The pedantic style, this will be used by CI/CD for main branches in projects
@@ -16,10 +17,10 @@ pub enum ClippyFlavor {
 
 impl Display for ClippyFlavor {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        let str_repr = match self {
-            ClippyFlavor::Pedantic => "pedantic",
-            ClippyFlavor::Development => "development",
-            ClippyFlavor::Prototype => "prototype",
+        let str_repr = match *self {
+            Self::Pedantic => "pedantic",
+            Self::Development => "development",
+            Self::Prototype => "prototype",
         };
 
         write!(f, "{}", str_repr)

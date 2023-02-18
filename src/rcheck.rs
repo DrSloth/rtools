@@ -1,5 +1,6 @@
 //! Wrapper for a small bu
 
+/// Flavor of clippy harshness
 mod clippy_flavor;
 
 use std::{
@@ -15,7 +16,7 @@ use clippy_flavor::ClippyFlavor;
 /// Run a standard set of cargo watch commands and use one of multiple standardised clippy commands
 #[derive(Parser, Debug)]
 #[clap(about, long_about = None)]
-#[allow(clippy::struct_excessive_bools)]
+#[allow(clippy::struct_excessive_bools)] // The bools are flags
 struct CliArgs {
     /// Which clippy flavor to use
     #[clap(value_parser, default_value_t = ClippyFlavor::default())]
@@ -38,6 +39,7 @@ struct CliArgs {
     optimize: bool,
 }
 
+/// A list of commands to run "-x" for cargo subcommands "-s" for external binaries
 const COMMANDS: [(&str, &str); 5] = [
     ("-x", "check"),
     ("-x", "test"),
@@ -52,15 +54,15 @@ fn main() -> io::Result<()> {
     let run_cmd = build_cmd(&cli_args);
     let mut cmd = if cli_args.observe {
         let mut cmd = Command::new("cargo");
-        cmd.args(&["watch", "--", "bash", "-c", &run_cmd]);
+        cmd.args(["watch", "--", "bash", "-c", &run_cmd]);
         cmd
     } else {
         let mut cmd = Command::new("bash");
-        cmd.args(&["-c", &run_cmd]);
+        cmd.args(["-c", &run_cmd]);
         cmd
     };
 
-    println!("cmd: {:?}", cmd);
+    eprintln!("cmd: {:?}", cmd);
 
     let output = cmd
         .stdin(Stdio::inherit())
@@ -75,6 +77,7 @@ fn main() -> io::Result<()> {
     }
 }
 
+/// Build the command to run from the given command line args
 fn build_cmd(cli_args: &CliArgs) -> String {
     let mut run_arg = String::with_capacity(1024);
     run_arg.push_str("echo 'running rcheck'");
@@ -116,76 +119,7 @@ fn build_cmd(cli_args: &CliArgs) -> String {
     run_arg
 }
 
-// fn observe(cli_args: CliArgs) -> Command {
-//     let mut shell_cmd = Command::new("cargo");
-
-//     shell_cmd.arg("watch");
-//     for (flag, cmd) in COMMANDS {
-//         match cmd {
-//             "rclippy" => {
-//                 let mut rclippy = String::with_capacity(64);
-//                 fmt_rclippy(&cli_args, &mut rclippy);
-//                 shell_cmd.args(&[flag, &rclippy]);
-//             }
-//             "run" => {
-//                 if cli_args.run {
-//                     shell_cmd.args(&["-x", "run"]);
-//                 }
-//             }
-//             cmd => {
-//                 shell_cmd.args(&[flag, cmd]);
-//             }
-//         }
-//     }
-
-//     shell_cmd
-// }
-
-// fn check(cli_args: CliArgs) -> Command {
-//     // TODO change this to directly run the commands without bash
-//     let mut shell_cmd = Command::new("bash");
-
-//     shell_cmd.arg("-c");
-
-//     let mut run_arg = String::with_capacity(1024);
-//     run_arg.push_str("echo 'running rcheck'");
-//     for (flag, cmd) in COMMANDS {
-//         match cmd {
-//             "rclippy" => {
-//                 run_arg.push_str("&&");
-//                 fmt_rclippy(&cli_args, &mut run_arg);
-//             }
-//             "run" => {
-//                 if cli_args.run {
-//                     run_arg.push_str("&& cargo run ");
-//                     if cli_args.optimize {
-//                         run_arg.push_str("--release");
-//                     }
-//                 } else {
-//                     continue;
-//                 }
-//             }
-//             s => match flag {
-//                 "-x" => {
-//                     let _ = write!(run_arg, "&& cargo {} ", s);
-//                     if cli_args.optimize {
-//                         run_arg.push_str("--release");
-//                     }
-//                 }
-//                 "-s" => {
-//                     let _ = write!(run_arg, "&& {}", s);
-//                 }
-//                 _ => unreachable!(),
-//             },
-//         }
-//     }
-
-//     println!("{}", run_arg);
-//     shell_cmd.arg(run_arg);
-
-//     shell_cmd
-// }
-
+/// Formatt a call to the rclippy binary
 fn fmt_rclippy(cli_args: &CliArgs, out: &mut String) {
     let _ = write!(
         out,
