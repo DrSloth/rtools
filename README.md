@@ -1,7 +1,7 @@
 A set of very pedantic Rust tools, mainly thin wrappers around clippy and cargo watch/check.
 
 ## Installation
-To install just run:
+To install just clone the repository `cd` into it and run:
 ```
 cargo build --release && sudo cp target/release/{rcheck,rclippy} /usr/bin/
 ```
