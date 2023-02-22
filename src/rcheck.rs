@@ -132,7 +132,7 @@ fn build_cmd(cli_args: &CliArgs) -> String {
 fn fmt_rclippy(cli_args: &CliArgs, out: &mut String) {
     let _ = write!(
         out,
-        "rclippy {} {} {} ",
+        "RUSTFLAGS=\"$RUSTFLAGS -D warnings\" rclippy {} {} {} ",
         cli_args.clippy_flavor,
         if cli_args.warn { "-w" } else { "" },
         if cli_args.optimize && !cli_args.observe {
