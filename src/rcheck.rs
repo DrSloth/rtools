@@ -109,7 +109,7 @@ fn build_cmd(cli_args: &CliArgs) -> String {
             s => match flag {
                 "-x" => {
                     // let _ = write!(run_arg, "&& cargo {} ", s);
-                    run_arg.push_str("&& cargo ");
+                    run_arg.push_str("&& RUSTFLAGS=\"$RUSTFLAGS -D warnings\" cargo ");
                     run_arg.push_str(s);
                     if cli_args.optimize {
                         run_arg.push_str("--release");
