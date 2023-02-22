@@ -44,11 +44,10 @@ struct CliArgs {
 }
 
 /// A list of commands to run "-x" for cargo subcommands "-s" for external binaries
-const COMMANDS: [(&str, &str); 5] = [
-    ("-x", "check"),
+const COMMANDS: [(&str, &str); 4] = [
+    ("-s", "rclippy"),
     ("-x", "test"),
     ("-x", "fmt --check"),
-    ("-s", "rclippy"),
     ("-x", "run"),
 ];
 
