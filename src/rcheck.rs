@@ -25,7 +25,7 @@ struct CliArgs {
     /// Clear the terminal before running
     #[clap(short, long, value_parser, default_value_t = false)]
     clear: bool,
-
+    
     /// Wether to also execute `cargo run` at the end
     #[clap(short, long, value_parser, default_value_t = false)]
     run: bool,
@@ -85,11 +85,11 @@ fn main() -> io::Result<()> {
 fn build_cmd(cli_args: &CliArgs) -> String {
     let mut run_arg = String::with_capacity(1024);
     run_arg.push_str("echo 'running rcheck'");
-
+    
     if cli_args.clear {
         run_arg.push_str("&&clear");
     }
-
+    
     for (flag, cmd) in COMMANDS {
         match cmd {
             "rclippy" => {
@@ -109,7 +109,7 @@ fn build_cmd(cli_args: &CliArgs) -> String {
             s => match flag {
                 "-x" => {
                     // let _ = write!(run_arg, "&& cargo {} ", s);
-                    run_arg.push_str("&& RUSTFLAGS=\"$RUSTFLAGS -D warnings\" cargo ");
+                    run_arg.push_str("&& cargo ");
                     run_arg.push_str(s);
                     if cli_args.optimize {
                         run_arg.push_str("--release");
@@ -132,7 +132,7 @@ fn build_cmd(cli_args: &CliArgs) -> String {
 fn fmt_rclippy(cli_args: &CliArgs, out: &mut String) {
     let _ = write!(
         out,
-        "RUSTFLAGS=\"$RUSTFLAGS -D warnings\" rclippy {} {} {} ",
+        "rclippy {} {} {} ",
         cli_args.clippy_flavor,
         if cli_args.warn { "-w" } else { "" },
         if cli_args.optimize && !cli_args.observe {
@@ -142,3 +142,4 @@ fn fmt_rclippy(cli_args: &CliArgs, out: &mut String) {
         }
     );
 }
+
