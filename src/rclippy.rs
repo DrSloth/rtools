@@ -14,6 +14,8 @@ use clippy_flavor::ClippyFlavor;
 
 /// List of all lints for the default development flavor
 const DEVELOPMENT_LINTS: &[&str] = &[
+    // rustc lints
+    "missing_debug_implementations",
     "missing_docs",
     // Cargo lints
     "clippy::wildcard_dependencies",
@@ -265,4 +267,3 @@ fn main() -> io::Result<()> {
         Ok(())
     }
 }
-

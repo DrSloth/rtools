@@ -25,7 +25,7 @@ struct CliArgs {
     /// Clear the terminal before running
     #[clap(short, long, value_parser, default_value_t = false)]
     clear: bool,
-    
+
     /// Wether to also execute `cargo run` at the end
     #[clap(short, long, value_parser, default_value_t = false)]
     run: bool,
@@ -84,11 +84,11 @@ fn main() -> io::Result<()> {
 fn build_cmd(cli_args: &CliArgs) -> String {
     let mut run_arg = String::with_capacity(1024);
     run_arg.push_str("echo 'running rcheck'");
-    
+
     if cli_args.clear {
         run_arg.push_str("&&clear");
     }
-    
+
     for (flag, cmd) in COMMANDS {
         match cmd {
             "rclippy" => {
@@ -141,4 +141,3 @@ fn fmt_rclippy(cli_args: &CliArgs, out: &mut String) {
         }
     );
 }
-
