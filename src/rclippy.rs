@@ -3,10 +3,7 @@
 /// Flavor of clippy harshness
 mod clippy_flavor;
 
-use std::{
-    io,
-    process::{Command, Stdio},
-};
+use std::process::{self, Command, ExitCode, Stdio};
 
 use clap::Parser;
 
@@ -213,7 +210,7 @@ struct CliArgs {
     optimize: bool,
 }
 
-fn main() -> io::Result<()> {
+fn main() -> ExitCode {
     let cli_args = CliArgs::parse();
 
     let mut cmd = Command::new("cargo");
@@ -259,11 +256,20 @@ fn main() -> io::Result<()> {
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
-        .output()?;
+        .output();
 
-    if let Some(code) = output.status.code() {
-        std::process::exit(code);
-    } else {
-        Ok(())
+    match output {
+        Ok(output) if output.status.success() => ExitCode::SUCCESS,
+        Ok(output) => {
+            if let Some(code) = output.status.code() {
+                process::exit(code)
+            } else {
+                ExitCode::FAILURE
+            }
+        }
+        Err(e) => {
+            eprintln!("An error occured: {}", e);
+            ExitCode::FAILURE
+        }
     }
 }

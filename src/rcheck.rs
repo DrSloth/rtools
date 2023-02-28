@@ -5,8 +5,7 @@ mod clippy_flavor;
 
 use std::{
     fmt::Write as _,
-    io,
-    process::{Command, Stdio},
+    process::{self, Command, ExitCode, Stdio},
 };
 
 use clap::Parser;
@@ -51,7 +50,7 @@ const COMMANDS: [(&str, &str); 4] = [
     ("-x", "run"),
 ];
 
-fn main() -> io::Result<()> {
+fn main() -> ExitCode {
     let cli_args = CliArgs::parse();
 
     let run_cmd = build_cmd(&cli_args);
@@ -71,12 +70,21 @@ fn main() -> io::Result<()> {
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
-        .output()?;
+        .output();
 
-    if let Some(i) = output.status.code() {
-        std::process::exit(i);
-    } else {
-        Ok(())
+    match output {
+        Ok(output) if output.status.success() => ExitCode::SUCCESS,
+        Ok(output) => {
+            if let Some(code) = output.status.code() {
+                process::exit(code)
+            } else {
+                ExitCode::FAILURE
+            }
+        }
+        Err(e) => {
+            eprintln!("An error occured: {}", e);
+            ExitCode::FAILURE
+        }
     }
 }
 
