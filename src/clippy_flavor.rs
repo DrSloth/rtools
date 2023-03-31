@@ -1,9 +1,9 @@
 use std::fmt::{self, Display, Formatter};
 
-use clap::ArgEnum;
+use clap::ValueEnum;
 
 /// Enumeration describing how harsh clippy should be
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Default, ArgEnum)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Default, ValueEnum)]
 pub enum ClippyFlavor {
     /// The pedantic style, this will be used by CI/CD for main branches in projects
     Pedantic,

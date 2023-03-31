@@ -3,9 +3,14 @@
 /// Flavor of clippy harshness
 mod clippy_flavor;
 
-use std::process::{self, Command, ExitCode, Stdio};
+use std::{
+    collections::HashSet,
+    fs, io,
+    process::{self, Command, ExitCode, Stdio},
+};
 
 use clap::Parser;
+use serde::de::{Deserialize, Deserializer};
 
 use clippy_flavor::ClippyFlavor;
 
@@ -217,6 +222,21 @@ fn main() -> ExitCode {
     // cmd.args(&["+nightly", "clippy"]);
     cmd.arg("clippy");
 
+    let cfg: Config = match fs::read_to_string("./rclippy.toml") {
+        Ok(s) => match toml::from_str(&s) {
+            Ok(cfg) => cfg,
+            Err(e) => {
+                eprintln!("Syntax Error in rclippy.toml: {e}");
+                return ExitCode::FAILURE;
+            }
+        },
+        Err(e) if e.kind() == io::ErrorKind::NotFound => Config::default(),
+        Err(e) => {
+            eprintln!("Unexpected io error while trying to access rclippy.toml: {e}");
+            return ExitCode::FAILURE;
+        }
+    };
+
     if cli_args.optimize {
         cmd.arg("--release");
     }
@@ -232,7 +252,9 @@ fn main() -> ExitCode {
     };
 
     for lint in lints.iter().flat_map(|li| li.iter()) {
-        cmd.args([action_flag, lint]);
+        if !cfg.skip_lints.contains(*lint) {
+            cmd.args([action_flag, lint]);
+        }
     }
 
     cmd.args([
@@ -272,4 +294,17 @@ fn main() -> ExitCode {
             ExitCode::FAILURE
         }
     }
+}
+
+/// Config passed in via configuration file rclippy.toml
+#[derive(Debug, Default, serde::Deserialize)]
+struct Config {
+    /// Clippy lints to skip, mainly useful when using older toolchains
+    #[serde(default, deserialize_with = "deserialize_list_as_set")]
+    skip_lints: HashSet<String>,
+}
+
+/// Deserialize a list of values into a `HashSet`
+fn deserialize_list_as_set<'de, D: Deserializer<'de>>(de: D) -> Result<HashSet<String>, D::Error> {
+    Vec::<String>::deserialize(de).map(|vec| vec.into_iter().collect())
 }
