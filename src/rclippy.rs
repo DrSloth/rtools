@@ -3,14 +3,10 @@
 /// Flavor of clippy harshness
 mod clippy_flavor;
 
-use std::{
-    collections::HashSet,
-    fs, io,
-    process::{self, Command, ExitCode, Stdio},
-};
+use std::{process::{self, Command, ExitCode, Stdio}, collections::HashSet, fs, io};
 
 use clap::Parser;
-use serde::de::{Deserialize, Deserializer};
+use serde::de::{Deserializer, Deserialize};
 
 use clippy_flavor::ClippyFlavor;
 
@@ -88,7 +84,6 @@ const DEVELOPMENT_LINTS: &[&str] = &[
     "clippy::ptr_as_ptr",
     "clippy::range_minus_one",
     "clippy::range_plus_one",
-    "clippy::redundant_closure_for_method_calls",
     "clippy::redundant_else",
     "clippy::ref_binding_to_reference",
     "clippy::ref_option_ref",
@@ -100,7 +95,7 @@ const DEVELOPMENT_LINTS: &[&str] = &[
     "clippy::stable_sort_primitive",
     "clippy::string_add_assign",
     "clippy::struct_excessive_bools",
-    "clippy::too_many_lines",
+    // "clippy::too_many_lines",
     "clippy::transmute_ptr_to_ptr",
     "clippy::trivially_copy_pass_by_ref",
     "clippy::unchecked_duration_subtraction",
@@ -223,20 +218,24 @@ fn main() -> ExitCode {
     cmd.arg("clippy");
 
     let cfg: Config = match fs::read_to_string("./rclippy.toml") {
-        Ok(s) => match toml::from_str(&s) {
-            Ok(cfg) => cfg,
-            Err(e) => {
-                eprintln!("Syntax Error in rclippy.toml: {e}");
-                return ExitCode::FAILURE;
+        Ok(s) => {
+            match toml::from_str(&s) {
+                Ok(cfg) => cfg,
+                Err(e) => {
+                    eprintln!("Syntax Error in rclippy.toml: {e}");
+                    return ExitCode::FAILURE;
+                }
             }
-        },
-        Err(e) if e.kind() == io::ErrorKind::NotFound => Config::default(),
+        }
+        Err(e) if e.kind() == io::ErrorKind::NotFound => {
+            Config::default()
+        }
         Err(e) => {
             eprintln!("Unexpected io error while trying to access rclippy.toml: {e}");
             return ExitCode::FAILURE;
         }
     };
-
+    
     if cli_args.optimize {
         cmd.arg("--release");
     }
@@ -308,3 +307,4 @@ struct Config {
 fn deserialize_list_as_set<'de, D: Deserializer<'de>>(de: D) -> Result<HashSet<String>, D::Error> {
     Vec::<String>::deserialize(de).map(|vec| vec.into_iter().collect())
 }
+
