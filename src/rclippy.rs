@@ -94,7 +94,7 @@ const DEVELOPMENT_LINTS: &[&str] = &[
     "clippy::return_self_not_must_use",
     "clippy::same_functions_in_if_condition",
     "clippy::semicolon_if_nothing_returned",
-    "clippy::similar_names",
+    // "clippy::similar_names",
     "clippy::single_match_else",
     "clippy::stable_sort_primitive",
     "clippy::string_add_assign",
