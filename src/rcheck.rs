@@ -46,7 +46,7 @@ struct CliArgs {
 const COMMANDS: [(&str, &str); 4] = [
     ("-s", "rclippy"),
     ("-x", "test"),
-    ("-s", "(cargo fmt --check || echo 'wrong formatting')"),
+    ("-s", "(cargo fmt --check || (echo 'wrong formatting' && exit 1))"),
     ("-x", "run"),
 ];
 
